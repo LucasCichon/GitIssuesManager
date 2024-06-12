@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="GitIssuesManager.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="GitHubUserToken" Type="System.String" Scope="User">
+      <Value Profile="(Default)">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</Value>
+    </Setting>
+    <Setting Name="GitLabUserToken" Type="System.String" Scope="User">
+      <Value Profile="(Default)">none</Value>
+    </Setting>
+    <Setting Name="BitbucketUserToken" Type="System.String" Scope="User">
+      <Value Profile="(Default)">none</Value>
+    </Setting>
+    <Setting Name="User" Type="System.String" Scope="User">
+      <Value Profile="(Default)">LucasCichon</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
