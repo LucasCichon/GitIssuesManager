@@ -17,11 +17,11 @@ namespace GitIssuesManager
             ApplicationConfiguration.Initialize();
             string gitHubToken = Properties.Settings.Default.GitHubUserToken;
             string user = Properties.Settings.Default.User;
-
+            var identity = new Git.Identity(gitHubToken, user);
             IIssueView view = new IssueView();
-            IGitClient client = new GitHubCLient(new Git.Identity(gitHubToken, user));
+            IGitClient client = new GitHubCLient(identity);
 
-            var presenter = new IssuePresenter(view, client);
+            var presenter = new IssuePresenter(view, client, identity);
 
             Application.Run((Form)view);
         }

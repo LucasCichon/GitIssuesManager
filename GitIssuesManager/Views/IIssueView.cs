@@ -24,6 +24,8 @@ namespace GitIssuesManager.Views
         event EventHandler CancelEvent;
         event EventHandler ClearEvent;
 
+        event EventHandler ChangeService;
+
         void SetIssueListBindingSource(BindingSource issueList);
         void SetServicesListBindingSource(BindingSource servicesList);
         void SetRepositoriesListBindingSource(BindingSource repositoriesList);

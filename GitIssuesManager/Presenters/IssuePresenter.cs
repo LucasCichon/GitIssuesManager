@@ -3,11 +3,6 @@ using Git.Interfaces;
 using Git.Models;
 using GitIssuesManager.Converters;
 using GitIssuesManager.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GitIssuesManager.Presenters
 {
@@ -15,7 +10,7 @@ namespace GitIssuesManager.Presenters
     {
         private IIssueView _view;
         private IGitClient _gitClient;
-        
+        private readonly Identity _identity;
         private BindingSource _issuesBindingSource;
         private BindingSource _servicesBindignSource;
         private BindingSource _repositoriesBindingSource;
@@ -23,17 +18,19 @@ namespace GitIssuesManager.Presenters
         private IEnumerable<GitServiceType> _services;
         private IEnumerable<string> _repositories;
 
-        public IssuePresenter(IIssueView view, IGitClient client)
+        public IssuePresenter(IIssueView view, IGitClient client, Identity identity)
         {
             _issuesBindingSource = new BindingSource();
             _servicesBindignSource = new BindingSource();
             _repositoriesBindingSource = new BindingSource();
             _view = view;
             _gitClient = client;
+            _identity = identity;
             _view.SearchEvent += SearchIssues;
             _view.ClearEvent += ClearIssues;
             _view.CloseEvent += CloseIssue;
             _view.ModifyEvent += ModifyIssue;
+            _view.ChangeService += ChangeService;
 
             _view.SetIssueListBindingSource(_issuesBindingSource);
             _view.SetServicesListBindingSource(_servicesBindignSource);
@@ -42,6 +39,11 @@ namespace GitIssuesManager.Presenters
 
 
             Load();
+        }
+
+        private void ChangeService(object? sender, EventArgs e)
+        {
+            _gitClient = GitClient.CreateClient(_view.ServiceName, _identity); 
         }
 
         private async void Load()
@@ -54,7 +56,7 @@ namespace GitIssuesManager.Presenters
         private async Task LoadAllIssuesList()
         {
 
-            var gitIssues = await _gitClient.GetIssues(_repositoriesBindingSource.Current.ToString());
+            var gitIssues = await _gitClient.GetIssues(_view.RepositoryName);
             _issueList = gitIssues.items;
             var issueListVm = _issueList.Select(i => i.ToDomain());
             _issuesBindingSource.DataSource = issueListVm;
