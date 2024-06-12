@@ -9,10 +9,9 @@ namespace Git.Interfaces
 {
     public interface IGitClient
     {
-        Task<bool> IsAuthenticated();
-        Task CreateNewIssue(NewIssue issue);
+        Task<bool> CreateNewIssue(NewIssue issue, string repositoryName);
         Task<GitIssues> GetIssues(string repositoryName);
-        Task ModifyIssue(Issue issue);
+        Task<bool> ModifyIssue(EditIssue issue, string repositoryName);
         Task CloseIssue(Int64 id);
         Task <Repositories> GetRepositories();
     }

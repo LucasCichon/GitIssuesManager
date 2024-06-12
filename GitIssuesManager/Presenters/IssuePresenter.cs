@@ -2,7 +2,9 @@
 using Git.Interfaces;
 using Git.Models;
 using GitIssuesManager.Converters;
+using GitIssuesManager.ViewModels;
 using GitIssuesManager.Views;
+using System.Windows.Forms;
 
 namespace GitIssuesManager.Presenters
 {
@@ -26,10 +28,12 @@ namespace GitIssuesManager.Presenters
             _view = view;
             _gitClient = client;
             _identity = identity;
-            _view.SearchEvent += SearchIssues;
+            _view.SearchEvent += SearchIssuesAsync;
+            _view.CreateEvent += CreateEventAsync;
             _view.ClearEvent += ClearIssues;
             _view.CloseEvent += CloseIssue;
-            _view.ModifyEvent += ModifyIssue;
+            _view.EditEvent += LoadIssueToEdit;
+            _view.SaveEvent += SaveEventAsync;
             _view.ChangeService += ChangeService;
 
             _view.SetIssueListBindingSource(_issuesBindingSource);
@@ -38,22 +42,79 @@ namespace GitIssuesManager.Presenters
             
 
 
-            Load();
+            LoadAsync();
+        }
+
+        private void LoadIssueToEdit(object? sender, EventArgs e)
+        {
+            ClearView();
+            var issue = (IssueVm)_issuesBindingSource.Current;
+            if(issue is null)
+            {
+                MessageBox.Show("There is no Issue selected.");
+                return;
+            }
+            _view.IssueId = issue.id;
+            _view.DetailsIssueTitle = issue.title;
+            _view.DetailsIssueDescription = issue.description;
+            _view.IssueNumber = issue.number;
+            _view.IsEdit = true;
+        }
+
+        private void ClearView()
+        {
+            _view.IsSuccessfull = false;
+            _view.Message = string.Empty;
+        }
+
+        private async Task SaveEventAsync(object? sender, EventArgs e)
+        {
+            var issue = new EditIssue() { title = _view.DetailsIssueTitle, body = _view.DetailsIssueDescription, number = _view.IssueNumber.ToString() };
+            var result = await _gitClient.ModifyIssue(issue, _view.RepositoryName);
+            
+            if (result)
+            {
+                _view.IsSuccessfull = true;
+                _view.Message = $"Issue '{_view.DetailsIssueTitle}' Updated Successfully.";
+                await LoadAllIssuesListAsync();
+            }
+            else
+            {
+                _view.IsSuccessfull = false;
+                _view.Message = $"There was an error occring Modify Issue '{_view.DetailsIssueTitle}'.";
+            }
         }
 
         private void ChangeService(object? sender, EventArgs e)
         {
             _gitClient = GitClient.CreateClient(_view.ServiceName, _identity); 
         }
+        
+        private async Task CreateEventAsync(object? sender, EventArgs e)
+        {
+            var newIssue = new NewIssue() { title = _view.NewIssueTitle, body = _view.NewIssueDescription };
+            var result = await _gitClient.CreateNewIssue(newIssue, _view.RepositoryName);
+            if (result)
+            {
+                _view.IsSuccessfull = true;
+                _view.Message = $"Issue '{_view.NewIssueTitle}' Created Successfully.";
+                await LoadAllIssuesListAsync();
+            }
+            else
+            {
+                _view.IsSuccessfull = false;
+                _view.Message = $"There was an error occring create Issue '{_view.NewIssueTitle}'.";
+            }
+        }
 
-        private async void Load()
+        private async Task LoadAsync()
         {
             _servicesBindignSource.DataSource = GitService.GetAllGitServices();
             var repos = await _gitClient.GetRepositories();
             _repositoriesBindingSource.DataSource = repos.items.Select(i => i.name);
         }
 
-        private async Task LoadAllIssuesList()
+        private async Task LoadAllIssuesListAsync()
         {
 
             var gitIssues = await _gitClient.GetIssues(_view.RepositoryName);
@@ -64,13 +125,9 @@ namespace GitIssuesManager.Presenters
             _view.Show();
         }
 
-        private async void SearchIssues(object? sender, EventArgs e)
+        private async Task SearchIssuesAsync(object? sender, EventArgs e)
         {
-            await LoadAllIssuesList();
-        }
-        private void ModifyIssue(object? sender, EventArgs e)
-        {
-            throw new NotImplementedException();
+            await LoadAllIssuesListAsync();
         }
 
         private void CloseIssue(object? sender, EventArgs e)

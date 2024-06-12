@@ -1,16 +1,15 @@
 ﻿using Git.Interfaces;
 using Git.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Git.Clients
 {
     public class BitbucketClient : IGitClient
     {
         private readonly Identity _identity;
+
+        public BitbucketClient()
+        {
+        }
 
         public BitbucketClient(Identity identity)
         {
@@ -22,6 +21,11 @@ namespace Git.Clients
         }
 
         public Task CreateNewIssue(NewIssue issue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> CreateNewIssue(NewIssue issue, string repositoryName)
         {
             throw new NotImplementedException();
         }
@@ -41,7 +45,12 @@ namespace Git.Clients
             throw new NotImplementedException();
         }
 
-        Task<bool> IGitClient.IsAuthenticated()
+        public Task<bool> ModifyIssue(EditIssue issue, string repositoryName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> ModifyIssue(EditIssue issue, string repositoryName, string issueId)
         {
             throw new NotImplementedException();
         }

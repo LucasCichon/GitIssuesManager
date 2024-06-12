@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.10.48" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Git\Git.csproj" />
   </ItemGroup>
 

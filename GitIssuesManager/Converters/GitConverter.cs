@@ -16,7 +16,8 @@ namespace GitIssuesManager.Converters
             {
                 id = issue.Id,
                 title = issue.Title,
-                description = issue.Body
+                description = issue.Body,
+                number = issue.Number
             };
         }
     }

@@ -67,27 +67,7 @@ namespace Git
             }
         }
 
-        static async Task<HttpStatusCode> CreateNewIsue()
-        {
-            try
-            {
-                var contentJson = JsonConvert.SerializeObject(new NewIssue()
-                { title = $"test: {DateTime.Now}", body = "This is AddNewIssue test from app" }) ?? string.Empty;
-
-
-
-                var content = new StringContent(contentJson, Encoding.UTF8, mediaType);
-                HttpResponseMessage response = await client.PostAsync(ServiceConstants.GitHubApiBaseAddress + "repos/LucasCichon/" + "ImportConsoleApp/" + "issues", content);
-                response.EnsureSuccessStatusCode();
-
-                string responseBody = await response.Content.ReadAsStringAsync();
-                return response.StatusCode;                
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+      
     }
 
 }

@@ -20,6 +20,7 @@ namespace Git.Models
         private string _state;
         private string _title;
         private string _body;
+        private int _number;
 
         [DisplayName("Id")]
         public long Id { get { return _id; } set { _id = value; } }
@@ -30,7 +31,8 @@ namespace Git.Models
         //public string comments_url { get; set; }
         //public string events_url { get; set; }
         //public string html_url { get; set; }
-        //public int number { get; set; }
+        [DisplayName("Number")]
+        public int Number { get => _number; set => _number = value; }
         
         [DisplayName("State")]
         public string State { get { return _state; } set { _state = value; } }
