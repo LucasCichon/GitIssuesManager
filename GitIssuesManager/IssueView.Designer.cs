@@ -37,6 +37,8 @@ namespace GitIssuesManager
             cmbService = new ComboBox();
             tabControl1 = new TabControl();
             tabPageIssueList = new TabPage();
+            btnExport = new Button();
+            btnImportLoad = new Button();
             btnEdit_tab = new Button();
             btnCreateNew_tab = new Button();
             tabPageCreateNewIssue = new TabPage();
@@ -54,6 +56,10 @@ namespace GitIssuesManager
             label6 = new Label();
             richTextBoxDescription_Details = new RichTextBox();
             textBoxTitle_Details = new TextBox();
+            tabPageImport = new TabPage();
+            btnCancelImport = new Button();
+            btnImportConfirm = new Button();
+            dataGridViewImportIssues = new DataGridView();
             label3 = new Label();
             label4 = new Label();
             ((System.ComponentModel.ISupportInitialize)DataGridIssues).BeginInit();
@@ -61,6 +67,8 @@ namespace GitIssuesManager
             tabPageIssueList.SuspendLayout();
             tabPageCreateNewIssue.SuspendLayout();
             tabPageIssueDetails.SuspendLayout();
+            tabPageImport.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewImportIssues).BeginInit();
             SuspendLayout();
             // 
             // btnSearch
@@ -74,12 +82,12 @@ namespace GitIssuesManager
             // 
             // DataGridIssues
             // 
+            DataGridIssues.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             DataGridIssues.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            DataGridIssues.Dock = DockStyle.Right;
             DataGridIssues.Location = new Point(191, 3);
             DataGridIssues.Name = "DataGridIssues";
             DataGridIssues.RowHeadersWidth = 62;
-            DataGridIssues.Size = new Size(1008, 639);
+            DataGridIssues.Size = new Size(1536, 757);
             DataGridIssues.TabIndex = 2;
             // 
             // contextMenuStrip1
@@ -106,18 +114,21 @@ namespace GitIssuesManager
             // 
             // tabControl1
             // 
+            tabControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tabControl1.Controls.Add(tabPageIssueList);
             tabControl1.Controls.Add(tabPageCreateNewIssue);
             tabControl1.Controls.Add(tabPageIssueDetails);
-            tabControl1.Dock = DockStyle.Bottom;
+            tabControl1.Controls.Add(tabPageImport);
             tabControl1.Location = new Point(0, 100);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(1210, 683);
+            tabControl1.Size = new Size(1117, 712);
             tabControl1.TabIndex = 5;
             // 
             // tabPageIssueList
             // 
+            tabPageIssueList.Controls.Add(btnExport);
+            tabPageIssueList.Controls.Add(btnImportLoad);
             tabPageIssueList.Controls.Add(btnEdit_tab);
             tabPageIssueList.Controls.Add(btnCreateNew_tab);
             tabPageIssueList.Controls.Add(btnSearch);
@@ -125,10 +136,30 @@ namespace GitIssuesManager
             tabPageIssueList.Location = new Point(4, 34);
             tabPageIssueList.Name = "tabPageIssueList";
             tabPageIssueList.Padding = new Padding(3);
-            tabPageIssueList.Size = new Size(1202, 645);
+            tabPageIssueList.Size = new Size(1109, 674);
             tabPageIssueList.TabIndex = 0;
             tabPageIssueList.Text = "Issue List";
             tabPageIssueList.UseVisualStyleBackColor = true;
+            // 
+            // btnExport
+            // 
+            btnExport.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnExport.Location = new Point(6, 608);
+            btnExport.Name = "btnExport";
+            btnExport.Size = new Size(179, 58);
+            btnExport.TabIndex = 1;
+            btnExport.Text = "Export";
+            btnExport.UseVisualStyleBackColor = true;
+            // 
+            // btnImportLoad
+            // 
+            btnImportLoad.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnImportLoad.Location = new Point(6, 544);
+            btnImportLoad.Name = "btnImportLoad";
+            btnImportLoad.Size = new Size(179, 58);
+            btnImportLoad.TabIndex = 1;
+            btnImportLoad.Text = "Import";
+            btnImportLoad.UseVisualStyleBackColor = true;
             // 
             // btnEdit_tab
             // 
@@ -138,7 +169,6 @@ namespace GitIssuesManager
             btnEdit_tab.TabIndex = 1;
             btnEdit_tab.Text = "Edit";
             btnEdit_tab.UseVisualStyleBackColor = true;
-            btnEdit_tab.Click += btnEdit_Click;
             // 
             // btnCreateNew_tab
             // 
@@ -148,7 +178,6 @@ namespace GitIssuesManager
             btnCreateNew_tab.TabIndex = 1;
             btnCreateNew_tab.Text = "Create New Issue";
             btnCreateNew_tab.UseVisualStyleBackColor = true;
-            btnCreateNew_tab.Click += btnCreateNew_Click2;
             // 
             // tabPageCreateNewIssue
             // 
@@ -161,7 +190,7 @@ namespace GitIssuesManager
             tabPageCreateNewIssue.Location = new Point(4, 34);
             tabPageCreateNewIssue.Name = "tabPageCreateNewIssue";
             tabPageCreateNewIssue.Padding = new Padding(3);
-            tabPageCreateNewIssue.Size = new Size(1202, 645);
+            tabPageCreateNewIssue.Size = new Size(1109, 674);
             tabPageCreateNewIssue.TabIndex = 1;
             tabPageCreateNewIssue.Text = "New Issue";
             tabPageCreateNewIssue.UseVisualStyleBackColor = true;
@@ -174,7 +203,6 @@ namespace GitIssuesManager
             btnCancel_New.TabIndex = 3;
             btnCancel_New.Text = "Cancel";
             btnCancel_New.UseVisualStyleBackColor = true;
-            btnCancel_New.Click += btnCancel_Click;
             // 
             // btnCreate_New
             // 
@@ -230,7 +258,7 @@ namespace GitIssuesManager
             tabPageIssueDetails.Location = new Point(4, 34);
             tabPageIssueDetails.Name = "tabPageIssueDetails";
             tabPageIssueDetails.Padding = new Padding(3);
-            tabPageIssueDetails.Size = new Size(1202, 645);
+            tabPageIssueDetails.Size = new Size(1109, 674);
             tabPageIssueDetails.TabIndex = 2;
             tabPageIssueDetails.Text = "Issue Details";
             tabPageIssueDetails.UseVisualStyleBackColor = true;
@@ -252,7 +280,6 @@ namespace GitIssuesManager
             btnCancel_Details.TabIndex = 7;
             btnCancel_Details.Text = "Cancel";
             btnCancel_Details.UseVisualStyleBackColor = true;
-            btnCancel_Details.Click += btnCancel_Details_Click;
             // 
             // bntSave_Details
             // 
@@ -296,6 +323,47 @@ namespace GitIssuesManager
             textBoxTitle_Details.Size = new Size(1114, 31);
             textBoxTitle_Details.TabIndex = 3;
             // 
+            // tabPageImport
+            // 
+            tabPageImport.Controls.Add(btnCancelImport);
+            tabPageImport.Controls.Add(btnImportConfirm);
+            tabPageImport.Controls.Add(dataGridViewImportIssues);
+            tabPageImport.Location = new Point(4, 34);
+            tabPageImport.Name = "tabPageImport";
+            tabPageImport.Padding = new Padding(3);
+            tabPageImport.Size = new Size(1109, 674);
+            tabPageImport.TabIndex = 3;
+            tabPageImport.Text = "Import Issues";
+            tabPageImport.UseVisualStyleBackColor = true;
+            // 
+            // btnCancelImport
+            // 
+            btnCancelImport.Location = new Point(8, 73);
+            btnCancelImport.Name = "btnCancelImport";
+            btnCancelImport.Size = new Size(183, 61);
+            btnCancelImport.TabIndex = 1;
+            btnCancelImport.Text = "Cancel";
+            btnCancelImport.UseVisualStyleBackColor = true;
+            // 
+            // btnImportConfirm
+            // 
+            btnImportConfirm.Location = new Point(8, 6);
+            btnImportConfirm.Name = "btnImportConfirm";
+            btnImportConfirm.Size = new Size(183, 61);
+            btnImportConfirm.TabIndex = 1;
+            btnImportConfirm.Text = "Import";
+            btnImportConfirm.UseVisualStyleBackColor = true;
+            // 
+            // dataGridViewImportIssues
+            // 
+            dataGridViewImportIssues.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewImportIssues.Dock = DockStyle.Right;
+            dataGridViewImportIssues.Location = new Point(208, 3);
+            dataGridViewImportIssues.Name = "dataGridViewImportIssues";
+            dataGridViewImportIssues.RowHeadersWidth = 62;
+            dataGridViewImportIssues.Size = new Size(898, 668);
+            dataGridViewImportIssues.TabIndex = 0;
+            // 
             // label3
             // 
             label3.AutoSize = true;
@@ -318,7 +386,7 @@ namespace GitIssuesManager
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1210, 783);
+            ClientSize = new Size(1117, 812);
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(tabControl1);
@@ -326,6 +394,7 @@ namespace GitIssuesManager
             Controls.Add(cmbRepository);
             Name = "IssueView";
             Text = "Issues";
+            SizeChanged += IssueView_SizeChanged;
             ((System.ComponentModel.ISupportInitialize)DataGridIssues).EndInit();
             tabControl1.ResumeLayout(false);
             tabPageIssueList.ResumeLayout(false);
@@ -333,6 +402,8 @@ namespace GitIssuesManager
             tabPageCreateNewIssue.PerformLayout();
             tabPageIssueDetails.ResumeLayout(false);
             tabPageIssueDetails.PerformLayout();
+            tabPageImport.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dataGridViewImportIssues).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -363,5 +434,11 @@ namespace GitIssuesManager
         private RichTextBox richTextBoxDescription_Details;
         private TextBox textBoxTitle_Details;
         private Button btnCloseIssue_Details;
+        private TabPage tabPageImport;
+        private Button btnImportConfirm;
+        private DataGridView dataGridViewImportIssues;
+        private Button btnExport;
+        private Button btnImportLoad;
+        private Button btnCancelImport;
     }
 }

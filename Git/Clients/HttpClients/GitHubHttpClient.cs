@@ -1,4 +1,5 @@
-﻿using Git.Error;
+﻿using Git.Common;
+using Git.Error;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Headers;
@@ -29,12 +30,12 @@ namespace Git.Clients.HttpClients
                     string responseBody = await response.Content.ReadAsStringAsync();
                     var result = JsonConvert.DeserializeObject<T>(responseBody);
 
-                    return response.StatusCode == HttpStatusCode.OK ? Either<IError, T>.CreateRight(result) : Either<IError, T>.CreateLeft(new HttpError(response.StatusCode));
+                    return response.StatusCode == HttpStatusCode.OK ? Either<IError, T>.Success(result) : Either<IError, T>.Error(new HttpError(response.StatusCode));
                 }
             }
             catch (Exception ex)
             {
-                return Either<IError, T>.CreateLeft(new HttpError(ex.Message, response.StatusCode));
+                return Either<IError, T>.Error(new HttpError(ex.Message, response.StatusCode));
             }
         }
 
@@ -52,12 +53,12 @@ namespace Git.Clients.HttpClients
                     response = await client.PostAsync(uri, content);
                     var message = await response.Content.ReadAsStringAsync();
 
-                    return response.IsSuccessStatusCode ? Either<IError, HttpStatusCode>.CreateRight(response.StatusCode) : Either<IError, HttpStatusCode>.CreateLeft(new HttpError(message, response.StatusCode));
+                    return response.IsSuccessStatusCode ? Either<IError, HttpStatusCode>.Success(response.StatusCode) : Either<IError, HttpStatusCode>.Error(new HttpError(message, response.StatusCode));
                 }
             }
             catch (Exception ex)
             {
-                return Either<IError, HttpStatusCode>.CreateLeft(new HttpError(ex.Message, response.StatusCode));
+                return Either<IError, HttpStatusCode>.Error(new HttpError(ex.Message, response.StatusCode));
             }
         }
 
@@ -74,12 +75,12 @@ namespace Git.Clients.HttpClients
                      response = await client.PatchAsync(uri, content);
                     var message = await response.Content.ReadAsStringAsync();
 
-                    return response.IsSuccessStatusCode ? Either<IError, HttpStatusCode>.CreateRight(response.StatusCode) : Either<IError, HttpStatusCode>.CreateLeft(new HttpError(message, response.StatusCode));
+                    return response.IsSuccessStatusCode ? Either<IError, HttpStatusCode>.Success(response.StatusCode) : Either<IError, HttpStatusCode>.Error(new HttpError(message, response.StatusCode));
                 }
             }
             catch (Exception ex)
             {
-                return Either<IError, HttpStatusCode>.CreateLeft(new HttpError(ex.Message, response.StatusCode));
+                return Either<IError, HttpStatusCode>.Error(new HttpError(ex.Message, response.StatusCode));
             }
         }
 

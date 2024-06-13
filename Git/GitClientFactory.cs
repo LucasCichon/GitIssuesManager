@@ -11,11 +11,11 @@ namespace Git
 {
     internal static class GitClientFactory
     {
-        public static IGitClient CreateClient(GitServiceType service, Identity identity) => service switch
+        public static IGitClient CreateClient(GitService.GitServiceType service, Identity identity) => service switch
         {
-            GitServiceType.GitHub => new GitHubCLient(identity),
-            GitServiceType.Bitbucket => new BitbucketClient(identity),
-            GitServiceType.GitLab => throw new NotImplementedException(),
+            GitService.GitServiceType.GitHub => new GitHubCLient(identity),
+            GitService.GitServiceType.Bitbucket => new BitbucketClient(identity),
+            GitService.GitServiceType.GitLab => throw new NotImplementedException(),
             _ => throw new NotImplementedException()
         };
     }

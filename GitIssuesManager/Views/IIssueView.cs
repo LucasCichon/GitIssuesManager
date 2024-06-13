@@ -23,20 +23,25 @@ namespace GitIssuesManager.Views
         string ServiceName { get; set; }
         string RepositoryName { get; set; }
         bool IsEdit { get; set; }
+        bool IsImport { get; set; }
 
-        event AsyncEventHandler SearchEvent;
-        event AsyncEventHandler CreateEvent;
+        event AsyncEventHandler SearchEventAsync;
+        event AsyncEventHandler CreateEventAsync;
         event EventHandler EditEvent;
         event AsyncEventHandler CloseEvent;
-        event AsyncEventHandler SaveEvent;
+        event AsyncEventHandler SaveEventAsync;
         event EventHandler CancelEvent;
         event EventHandler ClearEvent;
-
         event EventHandler ChangeService;
+        event EventHandler ImportLoadEvent;
+        event AsyncEventHandler ImportCompleteEventAsync;
+        event EventHandler ExportEvent;
+        
 
         void SetIssueListBindingSource(BindingSource issueList);
         void SetServicesListBindingSource(BindingSource servicesList);
         void SetRepositoriesListBindingSource(BindingSource repositoriesList);
+        void SetIssueImportListBindingSource(BindingSource importList);
         void Show();
     }
 }

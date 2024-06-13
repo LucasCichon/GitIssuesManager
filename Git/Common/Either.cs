@@ -6,10 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace Git
+namespace Git.Common
 {
 
-public abstract class Either<TLeft, TResult>
+    public abstract class Either<TLeft, TResult>
     {
         public abstract bool IsLeft { get; }
         public abstract bool IsRight { get; }
@@ -17,12 +17,12 @@ public abstract class Either<TLeft, TResult>
         public abstract TLeft Left { get; }
         public abstract TResult Right { get; }
 
-        public static Either<TLeft, TResult> CreateLeft(TLeft left)
+        public static Either<TLeft, TResult> Error(TLeft left)
         {
             return new LeftEither<TLeft, TResult>(left);
         }
 
-        public static Either<TLeft, TResult> CreateRight(TResult right)
+        public static Either<TLeft, TResult> Success(TResult right)
         {
             return new RightEither<TLeft, TResult>(right);
         }
@@ -65,8 +65,8 @@ public abstract class Either<TLeft, TResult>
             Func<TRight, TRightResult> mapFunc)
         {
             return either.IsRight
-                ? Either<TLeft, TRightResult>.CreateRight(mapFunc(either.Right))
-                : Either<TLeft, TRightResult>.CreateLeft(either.Left);
+                ? Either<TLeft, TRightResult>.Success(mapFunc(either.Right))
+                : Either<TLeft, TRightResult>.Error(either.Left);
         }
 
         public static void Match<TLeft, TRight>(this Either<TLeft, TRight> either, Action<TRight> onRight, Action<TLeft> onLeft)
@@ -87,7 +87,7 @@ public abstract class Either<TLeft, TResult>
         {
             return either.IsRight
                 ? bindFunc(either.Right)
-                : Either<TLeft, TRightResult>.CreateLeft(either.Left);
+                : Either<TLeft, TRightResult>.Error(either.Left);
         }
     }
 }

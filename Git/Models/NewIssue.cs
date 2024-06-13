@@ -8,13 +8,11 @@ namespace Git.Models
         public string title { get; set; }
         public string body { get; set; }
 
-        //private string _title;
-        //private string _body;
-
-        //[JsonPropertyName("title")]
-        //public string Title { get => _title; set { _title = value;} }
-        //[JsonPropertyName("body")]
-        //public string Body { get => _body; set { _body = value; } }
+        public NewIssue(string title, string body)
+        {
+            this.title = title;
+            this.body = body;
+        }
     }
 
 }

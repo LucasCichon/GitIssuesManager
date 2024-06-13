@@ -31,20 +31,13 @@ namespace Git.Clients
             return await _httpClient.PostAsync(new Uri(ServiceConstants.GitHubApiBaseAddress + $"repos/LucasCichon/{repositoryName}/issues"), issue);
         }
 
-        public Task CloseIssue(long id)
-        {
-            throw new NotImplementedException();
-        }
-
-
         public async Task<Either<IError, GitIssues>> GetIssues(string repositoryName)
         {
             var result = await _httpClient.GetAsync<Issue[]>(new Uri(ServiceConstants.GitHubApiBaseAddress + $"repos/{_identity.User}/{repositoryName}/issues"));
             return result.IsRight 
-                ? Either<IError, GitIssues>.CreateRight(new GitIssues() { items = result.Right }) 
-                : Either<IError, GitIssues>.CreateLeft(result.Left);
+                ? Either<IError, GitIssues>.Success(new GitIssues() { items = result.Right }) 
+                : Either<IError, GitIssues>.Error(result.Left);
         }
-
 
         public async Task<Either<IError, HttpStatusCode>> ModifyIssue(EditIssue issue, string repositoryName)
         {
@@ -55,8 +48,8 @@ namespace Git.Clients
         {
             var result = await _httpClient.GetAsync<Repository[]>(new Uri(ServiceConstants.GitHubApiBaseAddress + "user/repos"));
             return result.IsRight 
-                ? Either<IError, Repositories>.CreateRight(new Repositories() { items = result.Right }) 
-                : Either<IError, Repositories>.CreateLeft(result.Left);
+                ? Either<IError, Repositories>.Success(new Repositories() { items = result.Right }) 
+                : Either<IError, Repositories>.Error(result.Left);
         }
     }
 }
