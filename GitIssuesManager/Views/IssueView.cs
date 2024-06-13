@@ -1,14 +1,5 @@
-using Git;
-using Git.Extensions;
-using Git.Interfaces;
-using GitIssuesManager.Converters;
-using GitIssuesManager.ViewModels;
 using GitIssuesManager.Views;
-using Newtonsoft.Json.Bson;
-using System.ComponentModel;
-using System.Configuration;
 using Microsoft.VisualStudio.Threading;
-using System.Windows.Forms;
 
 namespace GitIssuesManager
 {

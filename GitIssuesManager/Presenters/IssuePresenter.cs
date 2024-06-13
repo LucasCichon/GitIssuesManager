@@ -2,6 +2,7 @@
 using Git.Clients;
 using Git.Common;
 using Git.Error;
+using Git.Extensions;
 using Git.Interfaces;
 using Git.Models;
 using GitIssuesManager.Converters;
@@ -17,7 +18,7 @@ namespace GitIssuesManager.Presenters
         private IIssueView _view;
         private IGitClient _gitClient;
         private IIOClient _ioClient;
-        private readonly Identity _identity;
+        private Identity _identity;
         private BindingSource _issuesBindingSource;
         private BindingSource _issuesImportBindingSource;
         private BindingSource _servicesBindignSource;
@@ -264,6 +265,8 @@ namespace GitIssuesManager.Presenters
         }
         private void ChangeService(object? sender, EventArgs e)
         {
+            var service = _view.ServiceName.GetService();
+            _identity = Authenticator.GetCurrentIdentity(service);
             _gitClient = GitClient.CreateClient(_view.ServiceName, _identity);
         }
     }

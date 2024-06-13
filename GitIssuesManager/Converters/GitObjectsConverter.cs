@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GitIssuesManager.Converters
 {
-    public static class GitConverter
+    public static class GitObjectsConverter
     {
         public static IssueVm ToDomain(this Issue issue)
         {
