@@ -27,7 +27,7 @@ namespace GitIssuesManager.Views
         event AsyncEventHandler SearchEvent;
         event AsyncEventHandler CreateEvent;
         event EventHandler EditEvent;
-        event EventHandler CloseEvent;
+        event AsyncEventHandler CloseEvent;
         event AsyncEventHandler SaveEvent;
         event EventHandler CancelEvent;
         event EventHandler ClearEvent;

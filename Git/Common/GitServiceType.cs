@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Git
+namespace Git.Common
 {
     public enum GitServiceType
     {
@@ -20,5 +20,5 @@ namespace Git
         public static List<GitServiceType> GetAllGitServices() => Enum.GetValues(typeof(GitServiceType)).Cast<GitServiceType>().ToList();
     }
 
-    
+
 }

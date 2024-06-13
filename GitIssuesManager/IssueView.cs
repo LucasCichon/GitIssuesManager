@@ -21,12 +21,12 @@ namespace GitIssuesManager
         private bool _isEdit;
         private int _issueNumber;
 
-        public event EventHandler LoadEvent;
         public event AsyncEventHandler SearchEvent;
         public event AsyncEventHandler CreateEvent;
+        public event EventHandler LoadEvent;
         public event EventHandler EditEvent;
-        public event EventHandler CloseEvent;
         public event AsyncEventHandler SaveEvent;
+        public event AsyncEventHandler CloseEvent;
         public event EventHandler CancelEvent;
         public event EventHandler ClearEvent;
         public event EventHandler ChangeService;
@@ -37,8 +37,8 @@ namespace GitIssuesManager
         public string NewIssueDescription { get => richTextBoxDescription_New.Text; set => richTextBoxDescription_New.Text = value; }
         public string DetailsIssueDescription { get => richTextBoxDescription_Details.Text; set => richTextBoxDescription_Details.Text = value; }
         public string State { get => _state; set => _state = value; }
-        public string ServiceName { get => cmbService.SelectedValue.ToString(); set => cmbService.SelectedItem = value; }
-        public string RepositoryName { get => cmbRepository.SelectedValue.ToString(); set => cmbRepository.SelectedItem = value; }
+        public string ServiceName { get => cmbService.SelectedValue?.ToString() ?? string.Empty; set => cmbService.SelectedItem = value; }
+        public string RepositoryName { get => cmbRepository.SelectedValue?.ToString() ?? string.Empty; set => cmbRepository.SelectedItem = value; }
         public bool IsSuccessfull { get => _isSuccessfull; set => _isSuccessfull = value; }
         public string Message { get => _message; set => _message = value; }
         public bool IsEdit { get => _isEdit; set => _isEdit = value; }
@@ -66,7 +66,6 @@ namespace GitIssuesManager
             AssociateAndRaiseViewEvents();
             tabControl1.TabPages.Remove(tabPageCreateNewIssue);
             tabControl1.TabPages.Remove(tabPageIssueDetails);
-
         }
 
         private async void AssociateAndRaiseViewEvents()
@@ -111,11 +110,11 @@ namespace GitIssuesManager
                 MessageBox.Show(_message);
             };
             //Close
-            btnCloseIssue_Details.Click += delegate { 
+            btnCloseIssue_Details.Click += async (s, e) => { 
                 var result = MessageBox.Show("Are you sure you want to close the Issue?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if(result == DialogResult.Yes)
                 {
-                    CloseEvent?.Invoke(this, EventArgs.Empty);
+                    await CloseEvent?.InvokeAsync(this, EventArgs.Empty);
                     MessageBox.Show(_message);
                 }
             };

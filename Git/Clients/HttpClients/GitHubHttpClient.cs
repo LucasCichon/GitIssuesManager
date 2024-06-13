@@ -1,13 +1,8 @@
-﻿using Git.Models;
+﻿using Git.Error;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Security.Principal;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Git.Clients.HttpClients
 {
@@ -21,78 +16,81 @@ namespace Git.Clients.HttpClients
         {
             _identity = identity;
         }
-        public async Task<T> GetAsync<T>(Uri uri)
+        public async Task<Either<IError, T>> GetAsync<T>(Uri uri)
         {
+            HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                using (HttpClient client = new HttpClient())
+                using (HttpClient client = CreateClient())
                 {
-                    // Set up HttpClient
-                    client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotNetApp", "1.0"));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _identity.BearerToken);
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
-                    client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
-
-                    HttpResponseMessage response = await client.GetAsync(uri);
+                    response = await client.GetAsync(uri);
                     response.EnsureSuccessStatusCode();
 
                     string responseBody = await response.Content.ReadAsStringAsync();
-                    var result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseBody);
-                    return result;
+                    var result = JsonConvert.DeserializeObject<T>(responseBody);
+
+                    return response.StatusCode == HttpStatusCode.OK ? Either<IError, T>.CreateRight(result) : Either<IError, T>.CreateLeft(new HttpError(response.StatusCode));
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
+                return Either<IError, T>.CreateLeft(new HttpError(ex.Message, response.StatusCode));
             }
         }
 
-        public async Task<HttpStatusCode> PostAsync(Uri uri, object data)
+        public async Task<Either<IError, HttpStatusCode>> PostAsync(Uri uri, object data)
         {
+            HttpResponseMessage response = new HttpResponseMessage();
+
             try
             {
-                using (HttpClient client = new HttpClient())
+                using (HttpClient client = CreateClient())
                 {
-                    client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotNetApp", "1.0"));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _identity.BearerToken);
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
-                    client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
-
                     var json = JsonConvert.SerializeObject(data);
                     var content = new StringContent(json, Encoding.UTF8, mediaType);
 
-                    HttpResponseMessage response = await client.PostAsync(uri, content);
-                    return response.StatusCode;
+                    response = await client.PostAsync(uri, content);
+                    var message = await response.Content.ReadAsStringAsync();
+
+                    return response.IsSuccessStatusCode ? Either<IError, HttpStatusCode>.CreateRight(response.StatusCode) : Either<IError, HttpStatusCode>.CreateLeft(new HttpError(message, response.StatusCode));
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
+                return Either<IError, HttpStatusCode>.CreateLeft(new HttpError(ex.Message, response.StatusCode));
             }
         }
 
-        public async Task<HttpStatusCode> PatchAsync(Uri uri, object data)
+        public async Task<Either<IError, HttpStatusCode>> PatchAsync(Uri uri, object data)
         {
+            HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                using (HttpClient client = new HttpClient())
+                using (HttpClient client = CreateClient())
                 {
-                    client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotNetApp", "1.0"));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _identity.BearerToken);
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
-                    client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
-
                     var json = JsonConvert.SerializeObject(data);
                     var content = new StringContent(json, Encoding.UTF8, mediaType);
 
-                    HttpResponseMessage response = await client.PatchAsync(uri, content);
-                    return response.StatusCode;
+                     response = await client.PatchAsync(uri, content);
+                    var message = await response.Content.ReadAsStringAsync();
+
+                    return response.IsSuccessStatusCode ? Either<IError, HttpStatusCode>.CreateRight(response.StatusCode) : Either<IError, HttpStatusCode>.CreateLeft(new HttpError(message, response.StatusCode));
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
+                return Either<IError, HttpStatusCode>.CreateLeft(new HttpError(ex.Message, response.StatusCode));
             }
+        }
+
+        private HttpClient CreateClient()
+        {
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotNetApp", "1.0"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _identity.BearerToken);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
+            client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
+            return client;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Git;
+using Git.Common;
 using Git.Interfaces;
 using Git.Models;
 using GitIssuesManager.Converters;
@@ -69,20 +70,20 @@ namespace GitIssuesManager.Presenters
 
         private async Task SaveEventAsync(object? sender, EventArgs e)
         {
-            var issue = new EditIssue() { title = _view.DetailsIssueTitle, body = _view.DetailsIssueDescription, number = _view.IssueNumber.ToString() };
+            var issue = new EditIssue(_view.IssueNumber.ToString(), _view.DetailsIssueTitle, _view.DetailsIssueDescription);
             var result = await _gitClient.ModifyIssue(issue, _view.RepositoryName);
-            
-            if (result)
+
+            result.Match(async success =>
             {
                 _view.IsSuccessfull = true;
                 _view.Message = $"Issue '{_view.DetailsIssueTitle}' Updated Successfully.";
                 await LoadAllIssuesListAsync();
-            }
-            else
+            },
+            error =>
             {
                 _view.IsSuccessfull = false;
-                _view.Message = $"There was an error occring Modify Issue '{_view.DetailsIssueTitle}'.";
-            }
+                _view.Message = $"There was an error on modify Issue '{_view.DetailsIssueTitle}'. Message: {error.Message}, StatusCode: {error.StatusCode}";
+            });
         }
 
         private void ChangeService(object? sender, EventArgs e)
@@ -94,33 +95,54 @@ namespace GitIssuesManager.Presenters
         {
             var newIssue = new NewIssue() { title = _view.NewIssueTitle, body = _view.NewIssueDescription };
             var result = await _gitClient.CreateNewIssue(newIssue, _view.RepositoryName);
-            if (result)
+
+            result.Match(async success =>
             {
                 _view.IsSuccessfull = true;
                 _view.Message = $"Issue '{_view.NewIssueTitle}' Created Successfully.";
                 await LoadAllIssuesListAsync();
-            }
-            else
+            },
+            error =>
             {
                 _view.IsSuccessfull = false;
-                _view.Message = $"There was an error occring create Issue '{_view.NewIssueTitle}'.";
-            }
+                _view.Message = $"There was an error on create Issue '{_view.NewIssueTitle}'. Message: '{error.Message}', Status Code: {error.StatusCode}";
+            });
         }
 
         private async Task LoadAsync()
         {
             _servicesBindignSource.DataSource = GitService.GetAllGitServices();
-            var repos = await _gitClient.GetRepositories();
-            _repositoriesBindingSource.DataSource = repos.items.Select(i => i.name);
+            var result = await _gitClient.GetRepositories();
+            result.Match(success =>
+            {
+                _repositoriesBindingSource.DataSource = success.items.Select(i => i.name);
+                _view.IsSuccessfull = true;
+
+            },
+            error =>
+            {
+                _view.Message = error.Message;
+                _view.IsSuccessfull = false;
+            });
         }
 
         private async Task LoadAllIssuesListAsync()
         {
 
-            var gitIssues = await _gitClient.GetIssues(_view.RepositoryName);
-            _issueList = gitIssues.items;
-            var issueListVm = _issueList.Select(i => i.ToDomain());
-            _issuesBindingSource.DataSource = issueListVm;
+            var result = await _gitClient.GetIssues(_view.RepositoryName);
+
+            result.Match(success =>
+            {
+                _issueList = success.items;
+                var issueListVm = _issueList.Select(i => i.ToDomain());
+                _issuesBindingSource.DataSource = issueListVm;
+                _view.IsSuccessfull = true;
+            },
+            error =>
+            {
+                _view.IsSuccessfull = false;
+                _view.Message = error.Message;
+            });
 
             _view.Show();
         }
@@ -130,9 +152,22 @@ namespace GitIssuesManager.Presenters
             await LoadAllIssuesListAsync();
         }
 
-        private void CloseIssue(object? sender, EventArgs e)
+        private async Task CloseIssue(object? sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            var issue = new EditIssue(_view.IssueNumber.ToString(), _view.DetailsIssueTitle, _view.DetailsIssueDescription, IssueState.closed);
+            var result = await _gitClient.ModifyIssue(issue, _view.RepositoryName);
+
+            result.Match(async success =>
+            {
+                _view.IsSuccessfull = true;
+                _view.Message = $"Issue '{_view.DetailsIssueTitle}' Closed Successfully.";
+                await LoadAllIssuesListAsync();
+            },
+            error =>
+            {
+                _view.IsSuccessfull = false;
+                _view.Message = $"There was an error when try to close Issue '{_view.DetailsIssueTitle}'. Message: {error.Message}, StatusCode: {error.StatusCode}";
+            });
         }
 
         private void ClearIssues(object? sender, EventArgs e)

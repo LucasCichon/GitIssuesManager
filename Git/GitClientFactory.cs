@@ -1,4 +1,5 @@
 ﻿using Git.Clients;
+using Git.Common;
 using Git.Interfaces;
 using System;
 using System.Collections.Generic;

@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Git.Error;
 using Git.Models;
 
 namespace Git.Interfaces
 {
     public interface IGitClient
     {
-        Task<bool> CreateNewIssue(NewIssue issue, string repositoryName);
-        Task<GitIssues> GetIssues(string repositoryName);
-        Task<bool> ModifyIssue(EditIssue issue, string repositoryName);
+        Task<Either<IError, HttpStatusCode>> CreateNewIssue(NewIssue issue, string repositoryName);
+        Task<Either<IError, GitIssues>> GetIssues(string repositoryName);
+        Task<Either<IError, HttpStatusCode>> ModifyIssue(EditIssue issue, string repositoryName);
         Task CloseIssue(Int64 id);
-        Task <Repositories> GetRepositories();
+        Task <Either<IError, Repositories>> GetRepositories();
     }
 }

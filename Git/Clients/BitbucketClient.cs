@@ -1,5 +1,7 @@
-﻿using Git.Interfaces;
+﻿using Git.Error;
+using Git.Interfaces;
 using Git.Models;
+using System.Net;
 
 namespace Git.Clients
 {
@@ -51,6 +53,26 @@ namespace Git.Clients
         }
 
         public Task<bool> ModifyIssue(EditIssue issue, string repositoryName, string issueId)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Either<IError, HttpStatusCode>> IGitClient.CreateNewIssue(NewIssue issue, string repositoryName)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Either<IError, GitIssues>> IGitClient.GetIssues(string repositoryName)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Either<IError, Repositories>> IGitClient.GetRepositories()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Either<IError, HttpStatusCode>> IGitClient.ModifyIssue(EditIssue issue, string repositoryName)
         {
             throw new NotImplementedException();
         }
