@@ -25,8 +25,7 @@ namespace GitIssuesManager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("github_pat_11AMAM6HA075LvX549cnse_hXqL7xhDQ2pR8GwEDPHeFicfgEaxo1QUVGRzgONpfymZWAT" +
-            "Y4Y6wZanzvqw")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string GitHubUserToken {
             get {
                 return ((string)(this["GitHubUserToken"]));
@@ -62,7 +61,7 @@ namespace GitIssuesManager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("LucasCichon")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string User {
             get {
                 return ((string)(this["User"]));

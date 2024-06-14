@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="GitHubUserToken" Type="System.String" Scope="User">
-      <Value Profile="(Default)">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</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="GitLabUserToken" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -12,7 +12,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="User" Type="System.String" Scope="User">
-      <Value Profile="(Default)">LucasCichon</Value>
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>
