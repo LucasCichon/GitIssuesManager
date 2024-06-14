@@ -60,6 +60,7 @@ namespace GitIssuesManager
             btnCancelImport = new Button();
             btnImportConfirm = new Button();
             dataGridViewImportIssues = new DataGridView();
+            progressBar = new ProgressBar();
             label3 = new Label();
             label4 = new Label();
             ((System.ComponentModel.ISupportInitialize)DataGridIssues).BeginInit();
@@ -87,7 +88,7 @@ namespace GitIssuesManager
             DataGridIssues.Location = new Point(191, 3);
             DataGridIssues.Name = "DataGridIssues";
             DataGridIssues.RowHeadersWidth = 62;
-            DataGridIssues.Size = new Size(1536, 757);
+            DataGridIssues.Size = new Size(922, 675);
             DataGridIssues.TabIndex = 2;
             // 
             // contextMenuStrip1
@@ -364,6 +365,13 @@ namespace GitIssuesManager
             dataGridViewImportIssues.Size = new Size(898, 668);
             dataGridViewImportIssues.TabIndex = 0;
             // 
+            // progressBarImport
+            // 
+            progressBar.Location = new Point(672, 47);
+            progressBar.Name = "progressBarImport";
+            progressBar.Size = new Size(194, 34);
+            progressBar.TabIndex = 2;
+            // 
             // label3
             // 
             label3.AutoSize = true;
@@ -387,6 +395,7 @@ namespace GitIssuesManager
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1117, 812);
+            Controls.Add(progressBar);
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(tabControl1);
@@ -440,5 +449,6 @@ namespace GitIssuesManager
         private Button btnExport;
         private Button btnImportLoad;
         private Button btnCancelImport;
+        private ProgressBar progressBar;
     }
 }

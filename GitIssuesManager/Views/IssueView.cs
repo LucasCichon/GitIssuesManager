@@ -1,3 +1,4 @@
+using GitIssuesManager.Presenters;
 using GitIssuesManager.Views;
 using Microsoft.VisualStudio.Threading;
 
@@ -62,6 +63,11 @@ namespace GitIssuesManager
             dataGridViewImportIssues.DataSource = importList;
         }
 
+        public void SetProgressBarBindingSource(ProgressBar progressBar)
+        {
+            this.progressBar = progressBar;
+        }
+
         public IssueView()
         {
             InitializeComponent();
@@ -81,6 +87,10 @@ namespace GitIssuesManager
             btnSearch.Click += async (s, e) =>
             {
                 await SearchEventAsync?.InvokeAsync(this, EventArgs.Empty);
+                if (!IsSuccessfull)
+                {
+                    MessageBox.Show(_message);
+                }
                 SetColumnsProperties();
             };
 

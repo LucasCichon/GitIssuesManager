@@ -39,7 +39,7 @@ namespace Git.Clients
 
             } while (issues.Count % pageSize == 0 && errorResult.IsRight);
 
-            return Either<IError, GitIssues>.Success(new GitIssues() { items = issues.ToArray() });
+            return errorResult.IsLeft ? errorResult : Either<IError, GitIssues>.Success(new GitIssues() { items = issues.ToArray() });
                 
         }
 

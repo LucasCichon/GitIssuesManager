@@ -9,6 +9,7 @@ using Git.Models;
 using GitIssuesManager.Converters;
 using GitIssuesManager.ViewModels;
 using GitIssuesManager.Views;
+using System.ComponentModel;
 using System.Net;
 using System.Windows.Forms;
 
@@ -165,8 +166,8 @@ namespace GitIssuesManager.Presenters
         }
         private async Task LoadAllIssuesListAsync()
         {
-
             var result = await _gitClient.GetIssues(_view.RepositoryName);
+
 
             result.Match(success =>
             {
@@ -214,7 +215,7 @@ namespace GitIssuesManager.Presenters
             error =>
             {
                 _view.IsSuccessfull = false;
-                _view.Message = $"There was an error on modify Issue '{_view.DetailsIssueTitle}'. Message: {error.Message}, StatusCode: {((HttpError)error).StatusCode}";
+                _view.Message = $"An error occured while modifying the Issue '{_view.DetailsIssueTitle}'. Message: {error.Message}, StatusCode: {((HttpError)error).StatusCode}";
             });
         }
         
@@ -232,7 +233,7 @@ namespace GitIssuesManager.Presenters
             error =>
             {
                 _view.IsSuccessfull = false;
-                _view.Message = $"There was an error on create Issue '{_view.NewIssueTitle}'. Message: '{error.Message}', Status Code: {((HttpError)error).StatusCode}";
+                _view.Message = $"An error occured while creating the Issue '{_view.NewIssueTitle}'. Message: '{error.Message}', Status Code: {((HttpError)error).StatusCode}";
             });
         }
 
@@ -250,6 +251,7 @@ namespace GitIssuesManager.Presenters
             {
                 _view.Message = error.Message;
                 _view.IsSuccessfull = false;
+                MessageBox.Show(error.Message);
             });
         }
 
@@ -267,7 +269,7 @@ namespace GitIssuesManager.Presenters
             error =>
             {
                 _view.IsSuccessfull = false;
-                _view.Message = $"There was an error when try to close Issue '{_view.DetailsIssueTitle}'. Message: {error.Message}, StatusCode: {((HttpError)error).StatusCode}";
+                _view.Message = $"An error occured while closing the Issue '{_view.DetailsIssueTitle}'. Message: {error.Message}, StatusCode: {((HttpError)error).StatusCode}";
             });
         }
 
@@ -283,10 +285,17 @@ namespace GitIssuesManager.Presenters
         }
         private void ChangeService(object? sender, EventArgs e)
         {
-            var service = _view.ServiceName.GetService();
-            _identity = Authenticator.GetCurrentIdentity(service);
-            _gitClient = GitClient.CreateClient(_view.ServiceName, _identity);
-            _gitHelper = GitHelper.CreateHelper(_view.ServiceName);
+            try
+            {
+                var service = _view.ServiceName.GetService();
+                _identity = Authenticator.GetCurrentIdentity(service);
+                _gitClient = GitClient.CreateClient(_view.ServiceName, _identity);
+                _gitHelper = GitHelper.CreateHelper(_view.ServiceName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occured while changing the Service: {ex.Message}");
+            }
         }
     }
 }
