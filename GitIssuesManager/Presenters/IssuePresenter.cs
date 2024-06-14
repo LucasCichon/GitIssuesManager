@@ -3,15 +3,12 @@ using Git.Clients;
 using Git.Common;
 using Git.Error;
 using Git.Extensions;
-using Git.Helpers;
 using Git.Interfaces;
 using Git.Models;
 using GitIssuesManager.Converters;
 using GitIssuesManager.ViewModels;
 using GitIssuesManager.Views;
-using System.ComponentModel;
 using System.Net;
-using System.Windows.Forms;
 
 namespace GitIssuesManager.Presenters
 {
@@ -171,15 +168,15 @@ namespace GitIssuesManager.Presenters
 
             result.Match(success =>
             {
+                _view.IsSuccessfull = true;
                 _issueList = success.items;
                 var issueListVm = _issueList.Select(i => i.ToDomain()).ToList();
                 _issuesBindingSource.DataSource = issueListVm;
-                _view.IsSuccessfull = true;
             },
             error =>
             {
                 _view.IsSuccessfull = false;
-                _view.Message = error.Message;
+                _view.Message = error.Message;              
             });
 
             _view.Show();
@@ -192,6 +189,7 @@ namespace GitIssuesManager.Presenters
             if(issue is null)
             {
                 MessageBox.Show("There is no Issue selected.");
+                _view.IsEdit = false;
                 return;
             }
             _view.IssueId = issue.id;
@@ -243,7 +241,7 @@ namespace GitIssuesManager.Presenters
             var result = await _gitClient.GetRepositories();
             result.Match(success =>
             {
-                _repositoriesBindingSource.DataSource = success.items.Select(i => i.name);
+                _repositoriesBindingSource.DataSource = success.items.Select(i => i.name).ToList();
                 _view.IsSuccessfull = true;
 
             },

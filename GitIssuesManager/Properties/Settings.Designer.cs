@@ -25,8 +25,8 @@ namespace GitIssuesManager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("github_pat_11AMAM6HA0Ptf5s4jtNFCq_c8EfejPUuViB5NCWZ7J7eVTuLppCVqVBzYXiSipSeKeL6KB" +
-            "EBJGLlwXc9ll")]
+        [global::System.Configuration.DefaultSettingValueAttribute("github_pat_11AMAM6HA075LvX549cnse_hXqL7xhDQ2pR8GwEDPHeFicfgEaxo1QUVGRzgONpfymZWAT" +
+            "Y4Y6wZanzvqw")]
         public string GitHubUserToken {
             get {
                 return ((string)(this["GitHubUserToken"]));

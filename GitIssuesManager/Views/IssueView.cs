@@ -63,11 +63,6 @@ namespace GitIssuesManager
             dataGridViewImportIssues.DataSource = importList;
         }
 
-        public void SetProgressBarBindingSource(ProgressBar progressBar)
-        {
-            this.progressBar = progressBar;
-        }
-
         public IssueView()
         {
             InitializeComponent();
@@ -86,10 +81,12 @@ namespace GitIssuesManager
             //Search
             btnSearch.Click += async (s, e) =>
             {
+                ClearMessageLabel();
                 await SearchEventAsync?.InvokeAsync(this, EventArgs.Empty);
                 if (!IsSuccessfull)
                 {
                     MessageBox.Show(_message);
+                    ClearEvent?.Invoke(this, EventArgs.Empty);
                 }
                 SetColumnsProperties();
             };
@@ -193,15 +190,20 @@ namespace GitIssuesManager
             };
             btnImportConfirm.Click += async (s, e) =>
             {
+                SetWarning("This may take some time");
                 await ImportCompleteEventAsync?.InvokeAsync(this, EventArgs.Empty);
                 if (ImportCompletedSuccessfully)
                 {
+                    SetSuccessInfo("Import Completed Successfully");
                     tabControl1.TabPages.Remove(tabPageImport);
                     tabControl1.TabPages.Add(tabPageIssueList);
                     MessageBox.Show("Import Completed Successfully");
                 }
                 if (!ImportCompletedSuccessfully)
                 {
+                    var reader = new StringReader(_message);
+                    SetWarning(reader.ReadLine());
+                    reader.Dispose();
                     MessageBox.Show(_message);
                 }
             };
@@ -221,7 +223,7 @@ namespace GitIssuesManager
         {
             try
             {
-                if (!IsEdit && !IsImport)
+                if (!IsEdit && !IsImport && DataGridIssues.Columns.Contains("title"))
                 {
                     DataGridIssues.Columns["description"].Width = DataGridIssues.Width - DataGridIssues.Columns["title"].Width;
                     DataGridIssues.Columns["id"].Visible = false;
@@ -236,6 +238,24 @@ namespace GitIssuesManager
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void SetWarning(string message)
+        {
+            lblInformation.ForeColor = Color.Red;
+            lblInformation.Text = message;
+            lblInformation.Visible = true;
+        }
+        private void SetSuccessInfo(string message)
+        {
+            lblInformation.ForeColor = Color.DarkGreen;
+            lblInformation.Text = message;
+            lblInformation.Visible = true;
+        }
+        private void ClearMessageLabel()
+        {
+            lblInformation.Text = string.Empty;
+            lblInformation.Visible = false;
         }
     }
 }

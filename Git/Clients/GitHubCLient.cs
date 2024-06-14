@@ -29,15 +29,22 @@ namespace Git.Clients
             int pageSize = 100;
             var issues = new List<Issue>();
             var errorResult = Either<IError, GitIssues>.Success(new GitIssues());
+            var shouldContinue = true;
 
             do
             {
                 var currentResult = await _httpClient.GetAsync<Issue[]>(new Uri(ServiceConstants.GitHubApiBaseAddress + $"repos/{_identity.User}/{repositoryName}/issues?per_page={pageSize}&page={currentPage}"));
-                currentResult.Match(issues.AddRange,
-                    error => errorResult = Either<IError, GitIssues>.Error(error));
+
+                currentResult.Match(success => 
+                {
+                    shouldContinue = success.Length != 0;
+                    issues.AddRange(success);
+                },
+                error => errorResult = Either<IError, GitIssues>.Error(error));
+
                 currentPage++;
 
-            } while (issues.Count % pageSize == 0 && errorResult.IsRight);
+            } while (shouldContinue && issues.Count % pageSize == 0 && errorResult.IsRight);
 
             return errorResult.IsLeft ? errorResult : Either<IError, GitIssues>.Success(new GitIssues() { items = issues.ToArray() });
                 

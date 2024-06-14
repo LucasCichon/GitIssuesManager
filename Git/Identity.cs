@@ -1,5 +1,4 @@
-﻿
-namespace Git
+﻿namespace Git
 {
     public class Identity
     {
