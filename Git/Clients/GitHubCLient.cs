@@ -20,7 +20,7 @@ namespace Git.Clients
 
         public async Task<Either<IError, HttpStatusCode>> CreateNewIssue(NewIssue issue, string repositoryName)
         {
-            return await _httpClient.PostAsync(new Uri(ServiceConstants.GitHubApiBaseAddress + $"repos/LucasCichon/{repositoryName}/issues"), issue);
+            return await _httpClient.PostAsync(new Uri(ServiceConstants.GitHubApiBaseAddress + $"repos/{_identity.User}/{repositoryName}/issues"), issue);
         }
 
         public async Task<Either<IError, GitIssues>> GetIssues(string repositoryName)

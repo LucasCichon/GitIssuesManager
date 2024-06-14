@@ -1,5 +1,6 @@
 ﻿using Git.Common;
 
+
 namespace Git.Interfaces
 {
     public interface IGitHelper

@@ -83,6 +83,7 @@ namespace Git.Clients.HttpClients
                 return Either<IError, HttpStatusCode>.Error(new HttpError(ex.Message, response.StatusCode));
             }
         }
+
         private HttpClient CreateClient()
         {
             HttpClient client = new HttpClient();
