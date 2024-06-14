@@ -1,6 +1,7 @@
 using GitIssuesManager.Presenters;
 using GitIssuesManager.Views;
 using Microsoft.VisualStudio.Threading;
+using System.Windows.Forms;
 
 namespace GitIssuesManager
 {
@@ -112,7 +113,7 @@ namespace GitIssuesManager
                     IsEdit = false;
                 }
                 SetColumnsProperties();
-                MessageBox.Show(_message);
+                SetSuccessInfoAsync(_message);
             };
             btnCancel_Details.Click += delegate
             {
@@ -131,7 +132,7 @@ namespace GitIssuesManager
                         tabControl1.TabPages.Add(tabPageIssueList);
                     }
                     SetColumnsProperties();
-                    MessageBox.Show(_message);
+                    SetSuccessInfoAsync(_message);
                 }
             };
 
@@ -153,7 +154,7 @@ namespace GitIssuesManager
                     tabControl1.TabPages.Add(tabPageIssueList);
                 }
                 SetColumnsProperties();
-                MessageBox.Show(_message);
+                SetSuccessInfoAsync(_message);
             };
             btnCancel_New.Click += delegate
             {
@@ -170,7 +171,7 @@ namespace GitIssuesManager
                 ExportEvent.Invoke(this, EventArgs.Empty);
                 if (IsSuccessfull)
                 {
-                    MessageBox.Show(_message);
+                    SetSuccessInfoAsync(_message);
                 }
             };
 
@@ -190,19 +191,19 @@ namespace GitIssuesManager
             };
             btnImportConfirm.Click += async (s, e) =>
             {
-                SetWarning("This may take some time");
+                ClearMessageLabel();
+                SetInformationAsync("This may take some time");
                 await ImportCompleteEventAsync?.InvokeAsync(this, EventArgs.Empty);
                 if (ImportCompletedSuccessfully)
                 {
-                    SetSuccessInfo("Import Completed Successfully");
+                    SetSuccessInfoAsync("Import Completed Successfully");
                     tabControl1.TabPages.Remove(tabPageImport);
                     tabControl1.TabPages.Add(tabPageIssueList);
-                    MessageBox.Show("Import Completed Successfully");
                 }
                 if (!ImportCompletedSuccessfully)
                 {
                     var reader = new StringReader(_message);
-                    SetWarning(reader.ReadLine());
+                    SetWarningAsync(reader.ReadLine());
                     reader.Dispose();
                     MessageBox.Show(_message);
                 }
@@ -240,20 +241,34 @@ namespace GitIssuesManager
             }
         }
 
-        private void SetWarning(string message)
+        private async Task SetWarningAsync(string message)
         {
             lblInformation.ForeColor = Color.Red;
-            lblInformation.Text = message;
-            lblInformation.Visible = true;
+            await SetMessageAsync(message);
         }
-        private void SetSuccessInfo(string message)
+        private async Task SetSuccessInfoAsync(string message)
         {
             lblInformation.ForeColor = Color.DarkGreen;
+            await SetMessageAsync(message);
+        }
+
+        private async Task SetInformationAsync(string message)
+        {
+            lblInformation.ForeColor = Color.Blue;
+            await SetMessageAsync(message);
+        }
+
+        private async Task SetMessageAsync(string message)
+        {
             lblInformation.Text = message;
             lblInformation.Visible = true;
+
+            await Task.Delay(10000);
+            ClearMessageLabel();
         }
         private void ClearMessageLabel()
         {
+            lblInformation.ForeColor = Color.Black;
             lblInformation.Text = string.Empty;
             lblInformation.Visible = false;
         }
