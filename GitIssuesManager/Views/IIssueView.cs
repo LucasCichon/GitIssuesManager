@@ -18,6 +18,7 @@ namespace GitIssuesManager.Views
         string State { get; set; }
         string Message { get; set; }
         bool IsSuccessfull { get; set; }
+        bool ImportCompletedSuccessfully { get; set; }
         int IssueNumber { get; set; }
 
         string ServiceName { get; set; }

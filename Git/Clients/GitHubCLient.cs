@@ -3,15 +3,7 @@ using Git.Common;
 using Git.Error;
 using Git.Interfaces;
 using Git.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http.Headers;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Git.Clients
 {
@@ -33,10 +25,22 @@ namespace Git.Clients
 
         public async Task<Either<IError, GitIssues>> GetIssues(string repositoryName)
         {
-            var result = await _httpClient.GetAsync<Issue[]>(new Uri(ServiceConstants.GitHubApiBaseAddress + $"repos/{_identity.User}/{repositoryName}/issues"));
-            return result.IsRight 
-                ? Either<IError, GitIssues>.Success(new GitIssues() { items = result.Right }) 
-                : Either<IError, GitIssues>.Error(result.Left);
+            int currentPage = 1;
+            int pageSize = 100;
+            var issues = new List<Issue>();
+            var errorResult = Either<IError, GitIssues>.Success(new GitIssues());
+
+            do
+            {
+                var currentResult = await _httpClient.GetAsync<Issue[]>(new Uri(ServiceConstants.GitHubApiBaseAddress + $"repos/{_identity.User}/{repositoryName}/issues?per_page={pageSize}&page={currentPage}"));
+                currentResult.Match(issues.AddRange,
+                    error => errorResult = Either<IError, GitIssues>.Error(error));
+                currentPage++;
+
+            } while (issues.Count % pageSize == 0 && errorResult.IsRight);
+
+            return Either<IError, GitIssues>.Success(new GitIssues() { items = issues.ToArray() });
+                
         }
 
         public async Task<Either<IError, HttpStatusCode>> ModifyIssue(EditIssue issue, string repositoryName)

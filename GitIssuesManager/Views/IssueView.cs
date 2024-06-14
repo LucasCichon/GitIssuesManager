@@ -8,6 +8,7 @@ namespace GitIssuesManager
         private long _id;
         private string _state;
         private bool _isSuccessfull;
+        private bool _importCompletedSuccessfully;
         private string _message;
         private bool _isEdit;
         private int _issueNumber;
@@ -39,6 +40,7 @@ namespace GitIssuesManager
         public bool IsEdit { get => _isEdit; set => _isEdit = value; }
         public bool IsImport { get => _isImport; set => _isImport = value; }
         public int IssueNumber { get => _issueNumber; set => _issueNumber = value; }
+        public bool ImportCompletedSuccessfully { get => _importCompletedSuccessfully; set => _importCompletedSuccessfully = value; }
 
         public void SetIssueListBindingSource(BindingSource issueList)
         {
@@ -182,13 +184,13 @@ namespace GitIssuesManager
             btnImportConfirm.Click += async (s, e) =>
             {
                 await ImportCompleteEventAsync?.InvokeAsync(this, EventArgs.Empty);
-                if (IsSuccessfull)
+                if (ImportCompletedSuccessfully)
                 {
                     tabControl1.TabPages.Remove(tabPageImport);
                     tabControl1.TabPages.Add(tabPageIssueList);
                     MessageBox.Show("Import Completed Successfully");
                 }
-                if (!IsSuccessfull)
+                if (!ImportCompletedSuccessfully)
                 {
                     MessageBox.Show(_message);
                 }

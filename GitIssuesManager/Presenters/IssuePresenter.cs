@@ -3,6 +3,7 @@ using Git.Clients;
 using Git.Common;
 using Git.Error;
 using Git.Extensions;
+using Git.Helpers;
 using Git.Interfaces;
 using Git.Models;
 using GitIssuesManager.Converters;
@@ -17,6 +18,7 @@ namespace GitIssuesManager.Presenters
     {
         private IIssueView _view;
         private IGitClient _gitClient;
+        private IGitHelper _gitHelper;
         private IIOClient _ioClient;
         private Identity _identity;
         private BindingSource _issuesBindingSource;
@@ -114,29 +116,45 @@ namespace GitIssuesManager.Presenters
             HttpStatusCode statusCode = HttpStatusCode.Created;
             var repository = _view.RepositoryName;
 
-            foreach (var i in _issueImportList)
-            {
-                tasks.Add(Task.Run(() => _gitClient.CreateNewIssue(new NewIssue(i.Title, i.Description), repository)));
-            }
+            int numberOfImportActions = _gitHelper.GetNumberOfSeparateActions(RequestMethod.POST, _issueImportList.Count());
+            int maxNumberOfConcurrentRequests = _gitHelper.GetNumberOfMaxConcurrentRequests(RequestMethod.POST);
 
-            var result = await Task.WhenAll(tasks.ToArray());
+            var issues = _issueImportList.ToList();
 
-            foreach(var i in result)
+            for(int i = 0; i < numberOfImportActions; i++)
             {
-                i.Match(success =>
+                for (int j = 0; j < maxNumberOfConcurrentRequests; j++)
                 {
-                    //
-                },
-                error =>
+                    int index = (i * maxNumberOfConcurrentRequests) + j;
+                    if(index >= issues.Count) { break; }
+                    var currentIssue = issues.ElementAt(index);
+                    tasks.Add(Task.Run(() => _gitClient.CreateNewIssue(new NewIssue(currentIssue.Title, currentIssue.Description), repository)));
+                }
+
+                var result = await Task.WhenAll(tasks.ToArray());
+
+                foreach(var r in result)
                 {
-                    isSuccess = false;
-                    errorMessage += error.Message + Environment.NewLine;
-                    statusCode = ((HttpError)error).StatusCode;
-                });
+                    r.Match(success =>
+                    {
+                        //
+                    },
+                    error =>
+                    {
+                        isSuccess = false;
+                        errorMessage += error.Message + Environment.NewLine;
+                        statusCode = ((HttpError)error).StatusCode;
+                    });
+                }
+
+                if(i < numberOfImportActions - 1)
+                {
+                    await Task.Delay(60000);
+                }
             }
 
             _view.Message = errorMessage;
-            _view.IsSuccessfull = isSuccess;
+            _view.ImportCompletedSuccessfully = isSuccess;
 
             await LoadAllIssuesListAsync();
         }
@@ -268,6 +286,7 @@ namespace GitIssuesManager.Presenters
             var service = _view.ServiceName.GetService();
             _identity = Authenticator.GetCurrentIdentity(service);
             _gitClient = GitClient.CreateClient(_view.ServiceName, _identity);
+            _gitHelper = GitHelper.CreateHelper(_view.ServiceName);
         }
     }
 }

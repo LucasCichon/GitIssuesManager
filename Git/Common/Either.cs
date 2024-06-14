@@ -60,15 +60,6 @@ namespace Git.Common
 
     public static class EitherExtensions
     {
-        public static Either<TLeft, TRightResult> Map<TLeft, TRight, TRightResult>(
-            this Either<TLeft, TRight> either,
-            Func<TRight, TRightResult> mapFunc)
-        {
-            return either.IsRight
-                ? Either<TLeft, TRightResult>.Success(mapFunc(either.Right))
-                : Either<TLeft, TRightResult>.Error(either.Left);
-        }
-
         public static void Match<TLeft, TRight>(this Either<TLeft, TRight> either, Action<TRight> onRight, Action<TLeft> onLeft)
         {
             if (either.IsRight)
@@ -79,15 +70,6 @@ namespace Git.Common
             {
                 onLeft(either.Left);
             }
-        }
-
-        public static Either<TLeft, TRightResult> Bind<TLeft, TRight, TRightResult>(
-            this Either<TLeft, TRight> either,
-            Func<TRight, Either<TLeft, TRightResult>> bindFunc)
-        {
-            return either.IsRight
-                ? bindFunc(either.Right)
-                : Either<TLeft, TRightResult>.Error(either.Left);
         }
     }
 }
