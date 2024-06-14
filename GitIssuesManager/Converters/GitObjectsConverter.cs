@@ -1,14 +1,9 @@
 ﻿using Git.Models;
 using GitIssuesManager.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GitIssuesManager.Converters
 {
-    public static class GitConverter
+    public static class GitObjectsConverter
     {
         public static IssueVm ToDomain(this Issue issue)
         {
@@ -16,7 +11,8 @@ namespace GitIssuesManager.Converters
             {
                 id = issue.Id,
                 title = issue.Title,
-                description = issue.Body
+                description = issue.Body,
+                number = issue.Number
             };
         }
     }

@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Git.Common;
 
 namespace Git.Extensions
 {
     public static class GitServiceExtension
     {
-        public static GitServiceType GetService(this string service) =>
+        public static GitService.GitServiceType GetService(this string service) =>
             service switch
             {
-                ServiceConstants.GitHubName => GitServiceType.GitHub,
-                ServiceConstants.GitLabName => GitServiceType.GitLab,
-                ServiceConstants.BitbucketName => GitServiceType.Bitbucket,
+                ServiceConstants.GitHubName => GitService.GitServiceType.GitHub,
+                ServiceConstants.GitLabName => GitService.GitServiceType.GitLab,
+                ServiceConstants.BitbucketName => GitService.GitServiceType.Bitbucket,
                 _ => throw new ArgumentOutOfRangeException(nameof(service), $"Not expected GitServiceName value: {service}")
             };
 
-        public static string GetServiceName(this GitServiceType service) =>
+        public static string GetServiceName(this GitService.GitServiceType service) =>
             service switch
             {
-                GitServiceType.GitHub => ServiceConstants.GitHubName,
-                GitServiceType.GitLab => ServiceConstants.GitLabName,
-                GitServiceType.Bitbucket => ServiceConstants.BitbucketName,
+                GitService.GitServiceType.GitHub => ServiceConstants.GitHubName,
+                GitService.GitServiceType.GitLab => ServiceConstants.GitLabName,
+                GitService.GitServiceType.Bitbucket => ServiceConstants.BitbucketName,
                 _ => throw new ArgumentOutOfRangeException(nameof(service), $"Not expected GitService value: {service}")
             };
     }

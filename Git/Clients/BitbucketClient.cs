@@ -1,10 +1,8 @@
-﻿using Git.Interfaces;
+﻿using Git.Common;
+using Git.Error;
+using Git.Interfaces;
 using Git.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
 
 namespace Git.Clients
 {
@@ -16,32 +14,23 @@ namespace Git.Clients
         {
             _identity = identity;
         }
-        public Task CloseIssue(long id)
+
+        public Task<Either<IError, HttpStatusCode>> CreateNewIssue(NewIssue issue, string repositoryName)
         {
             throw new NotImplementedException();
         }
 
-        public Task CreateNewIssue(NewIssue issue)
+        public Task<Either<IError, GitIssues>> GetIssues(string repositoryName)
         {
             throw new NotImplementedException();
         }
 
-        public Task<GitIssues> GetIssues(string repositoryName)
+        public Task<Either<IError, Repositories>> GetRepositories()
         {
             throw new NotImplementedException();
         }
 
-        public Task<Repositories> GetRepositories()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task ModifyIssue(Issue issue)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<bool> IGitClient.IsAuthenticated()
+        public Task<Either<IError, HttpStatusCode>> ModifyIssue(EditIssue issue, string repositoryName)
         {
             throw new NotImplementedException();
         }
