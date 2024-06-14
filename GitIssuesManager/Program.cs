@@ -3,6 +3,8 @@ using GitIssuesManager.Presenters;
 using Git.Clients;
 using GitIssuesManager.Views;
 using Git.Interfaces;
+using Git.Common;
+using GitIssuesManager.Properties;
 
 namespace GitIssuesManager
 {
@@ -15,13 +17,15 @@ namespace GitIssuesManager
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            string gitHubToken = Properties.Settings.Default.GitHubUserToken;
-            string user = Properties.Settings.Default.User;
-
+            var settings = SettingsValidator.ValidateAndGetSettings();
+            
+            var identity = new Git.Identity(
+                settings.GetValueOrDefault(ServiceConstants.GitHubTokenUserTokenName), 
+                settings.GetValueOrDefault(ServiceConstants.UserName));
             IIssueView view = new IssueView();
-            IGitClient client = new GitHubCLient(new Git.Identity(gitHubToken, user));
+            IGitClient client = new GitHubCLient(identity);
 
-            var presenter = new IssuePresenter(view, client);
+            var presenter = new IssuePresenter(view, client, identity);
 
             Application.Run((Form)view);
         }

@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
+using Git.Common;
+using Git.Error;
 using Git.Models;
 
 namespace Git.Interfaces
 {
     public interface IGitClient
     {
-        Task<bool> IsAuthenticated();
-        Task CreateNewIssue(NewIssue issue);
-        Task<GitIssues> GetIssues(string repositoryName);
-        Task ModifyIssue(Issue issue);
-        Task CloseIssue(Int64 id);
-        Task <Repositories> GetRepositories();
+        Task<Either<IError, HttpStatusCode>> CreateNewIssue(NewIssue issue, string repositoryName);
+        Task<Either<IError, GitIssues>> GetIssues(string repositoryName);
+        Task<Either<IError, HttpStatusCode>> ModifyIssue(EditIssue issue, string repositoryName);
+        Task <Either<IError, Repositories>> GetRepositories();
     }
 }

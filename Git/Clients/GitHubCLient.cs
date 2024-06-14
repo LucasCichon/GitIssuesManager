@@ -1,121 +1,66 @@
-﻿using Git.Interfaces;
+﻿using Git.Clients.HttpClients;
+using Git.Common;
+using Git.Error;
+using Git.Interfaces;
 using Git.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
 
 namespace Git.Clients
 {
     public class GitHubCLient : IGitClient
     {
-        private const string mediaType = "application/vnd.github+json";
         private readonly Identity _identity;
+        private readonly GitHubHttpClient _httpClient;
 
         public GitHubCLient(Identity identity)
         {
             _identity = identity;
+            _httpClient = new GitHubHttpClient(_identity);
         }
 
-        public Task CreateNewIssue(NewIssue issue)
+        public async Task<Either<IError, HttpStatusCode>> CreateNewIssue(NewIssue issue, string repositoryName)
         {
-            throw new NotImplementedException();
-        }
-        public Task CloseIssue(long id)
-        {
-            throw new NotImplementedException();
+            return await _httpClient.PostAsync(new Uri(ServiceConstants.GitHubApiBaseAddress + $"repos/{_identity.User}/{repositoryName}/issues"), issue);
         }
 
-
-        public async Task<GitIssues> GetIssues(string repositoryName)
+        public async Task<Either<IError, GitIssues>> GetIssues(string repositoryName)
         {
-            try
+            int currentPage = 1;
+            int pageSize = 100;
+            var issues = new List<Issue>();
+            var errorResult = Either<IError, GitIssues>.Success(new GitIssues());
+            var shouldContinue = true;
+
+            do
             {
-                using (HttpClient client = new HttpClient())
+                var currentResult = await _httpClient.GetAsync<Issue[]>(new Uri(ServiceConstants.GitHubApiBaseAddress + $"repos/{_identity.User}/{repositoryName}/issues?per_page={pageSize}&page={currentPage}"));
+
+                currentResult.Match(success => 
                 {
-                    // Set up HttpClient
-                    client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotNetApp", "1.0"));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _identity.BearerToken);
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
-                    client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
+                    shouldContinue = success.Length != 0;
+                    issues.AddRange(success);
+                },
+                error => errorResult = Either<IError, GitIssues>.Error(error));
 
-                    HttpResponseMessage response = await client.GetAsync(ServiceConstants.GitHubApiBaseAddress + $"repos/LucasCichon/{repositoryName}/" + "issues");
-                    response.EnsureSuccessStatusCode();
+                currentPage++;
 
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    var issues = Newtonsoft.Json.JsonConvert.DeserializeObject <Issue[]>(responseBody);
-                    return new GitIssues() { items = issues };
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            } while (shouldContinue && issues.Count % pageSize == 0 && errorResult.IsRight);
+
+            return errorResult.IsLeft ? errorResult : Either<IError, GitIssues>.Success(new GitIssues() { items = issues.ToArray() });
+                
         }
 
-
-        public Task ModifyIssue(Issue issue)
+        public async Task<Either<IError, HttpStatusCode>> ModifyIssue(EditIssue issue, string repositoryName)
         {
-            throw new NotImplementedException();
+            return await _httpClient.PatchAsync(new Uri(ServiceConstants.GitHubApiBaseAddress + $"repos/{_identity.User}/{repositoryName}/issues/{issue.number}"), issue);
         }
 
-        public async Task<bool> IsAuthenticated()
+        public async Task<Either<IError, Repositories>> GetRepositories()
         {
-            try
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotNetApp", "1.0"));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _identity.BearerToken);
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
-                    client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
-
-                    var user = await GetGitHubUserAsync(client);
-                    return user != null;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        private static async Task<GitHubUser> GetGitHubUserAsync(HttpClient client)
-        {
-            HttpResponseMessage response = await client.GetAsync(ServiceConstants.GitHubApiBaseAddress + "user");
-            response.EnsureSuccessStatusCode();
-
-            string responseBody = await response.Content.ReadAsStringAsync();
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<GitHubUser>(responseBody);
-            return user;
-        }
-
-        public async Task<Repositories> GetRepositories()
-        {
-            try
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    // Set up HttpClient
-                    client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotNetApp", "1.0"));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _identity.BearerToken);
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
-                    client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
-
-                    HttpResponseMessage response = await client.GetAsync(ServiceConstants.GitHubApiBaseAddress + "user/repos");
-                    response.EnsureSuccessStatusCode();
-
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    var issues = Newtonsoft.Json.JsonConvert.DeserializeObject<Repository[]>(responseBody);
-                    return new Repositories() { items = issues };
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var result = await _httpClient.GetAsync<Repository[]>(new Uri(ServiceConstants.GitHubApiBaseAddress + "user/repos"));
+            return result.IsRight 
+                ? Either<IError, Repositories>.Success(new Repositories() { items = result.Right }) 
+                : Either<IError, Repositories>.Error(result.Left);
         }
     }
 }
